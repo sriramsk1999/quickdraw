@@ -39,16 +39,35 @@ function App() {
 
 
 function erase() {
-  let canva = document.getElementsByClassName('TheCanvas')[0];
-  let ctx = canva.getContext('2d');
-  ctx.clearRect(0, 0, canva.width, canva.height);
+  let canvas = document.getElementsByClassName('TheCanvas')[0];
+  let ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle  = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function saveCanvas() {
+  let canvas = document.getElementsByClassName('TheCanvas')[0];
+  canvas.toBlob(
+  function(blob) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200 ) {
+        let response = xhr.responseText;
+        console.log(response);
+      }
+    }
+    xhr.open('POST', '/canvas_img',true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send(blob);
+    console.log(blob);
+  },
+  'image/jpeg',1.0);
+}
 
 class DrawCanvas extends React.Component {
   componentDidMount() {
     const canvas = this.refs.canvas;
-    const ctx = canvas.getContext("2d");
 
     canvas.addEventListener("mousemove", function (e) {
         findxy('move', e, canvas)
@@ -57,12 +76,17 @@ class DrawCanvas extends React.Component {
         findxy('down', e, canvas)
     }, false);
     canvas.addEventListener("mouseup", function (e) {
-        findxy('up', e, canvas)
+        findxy('up', e, canvas);
+        saveCanvas();
     }, false);
     canvas.addEventListener("mouseout", function (e) {
         findxy('out', e, canvas)
     }, false);
     
+    const ctx = canvas.getContext("2d");    
+    ctx.fillStyle  = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    setInterval(saveCanvas,2000);
   }
 
   render() {
@@ -77,7 +101,7 @@ class DrawCanvas extends React.Component {
 
 function findxy(res, e, canvas) {
     const ctx = canvas.getContext("2d");    
-    if (res == 'down') {
+    if (res === 'down') {
         prevX = currX;
         prevY = currY;
         currX = e.clientX - canvas.offsetLeft;
@@ -93,10 +117,10 @@ function findxy(res, e, canvas) {
             dot_flag = false;
         }
     }
-    if (res == 'up' || res == "out") {
+    if (res === 'up' || res === "out") {
         flag = false;
     }
-    if (res == 'move') {
+    if (res === 'move') {
         if (flag) {
             prevX = currX;
             prevY = currY;
