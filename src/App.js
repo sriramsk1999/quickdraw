@@ -4,12 +4,22 @@ import {Navbar, Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
+// Variables for the drawing application
 let flag = false;
 let dot_flag = false;
 let prevX = 0;
 let prevY = 0;
 let currX = 0;
 let currY = 0;
+
+//  the object to be drawn
+let toDraw;
+// the timer id of the interval 
+let timerID;
+// a boolean value checking if drawing has begun
+let startedDrawing = false;
+// game is in progress
+let gameinProgress = true;
 
 function App() {
   return (
@@ -23,21 +33,29 @@ function App() {
         height="30"
         className="d-inline-block align-top"
       />{' '}
-      Pictionary!
+      Quickdraw!
     </Navbar.Brand>
   </Navbar>
+  <DrawBox/>
   <DrawCanvas/>
+  <PredBox/>
   <Button 
   variant="dark"
   className = "ClearButton"
   onClick = {erase}
   >Clear
   </Button>
+  <Button 
+  variant="dark"
+  className = "ClearButton"
+  onClick = {newGame}
+  >New Game
+  </Button> 
   </>
   );
 }
 
-
+// Clears the canvas for redrawing
 function erase() {
   let canvas = document.getElementsByClassName('TheCanvas')[0];
   let ctx = canvas.getContext('2d');
@@ -46,6 +64,7 @@ function erase() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+// takes a picture of the canvas and sends it for processing
 function saveCanvas() {
   let canvas = document.getElementsByClassName('TheCanvas')[0];
   canvas.toBlob(
@@ -54,50 +73,133 @@ function saveCanvas() {
     xhr.onreadystatechange = function() {
       if (this.readyState === 4 && this.status === 200 ) {
         let response = xhr.responseText;
+        displayPrediction(response);
         console.log(response);
       }
     }
-    xhr.open('POST', '/canvas_img',true);
+    xhr.open('POST', '/api/canvas_img',true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.send(blob);
-    console.log(blob);
   },
   'image/jpeg',1.0);
 }
 
+function newGame() {
+  erase();
+  let predBox = document.getElementsByClassName('PredBox')[0];
+  predBox.innerText = "";
+  whatToDraw();
+  gameinProgress = true;
+}
+
+// displays the prediction of the neural net
+function displayPrediction(prediction) {
+  let predBox = document.getElementsByClassName('PredBox')[0];
+  predBox.innerText = "I see : " + prediction;
+  if(prediction === toDraw) {
+    gameOver();
+
+  }
+}
+
+function gameOver() {
+  let predEle = document.getElementsByClassName('PredBox')[0];
+  predEle.innerText = "Well drawn!";
+  console.log("Game over.");
+
+  // reset state
+  clearInterval(timerID);
+  startedDrawing = false;
+
+  //disable drawing
+  gameinProgress = false;
+}
+
+// fetches the object to be drawn
+function whatToDraw() {
+    let divEle = document.getElementsByClassName('DrawBox')[0];
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200 ) {
+        toDraw = xhr.responseText;
+        divEle.innerText =  'Draw : ' + toDraw;
+      }
+    }
+    xhr.open('GET', '/api/object_name',true);
+    xhr.send();
+}
+
+// Submission throttling starts only after the user has started drawing
+function setBoolInterval() {
+  if(startedDrawing == false) {
+    startedDrawing = true;
+    timerID = setInterval(saveCanvas,2000);
+  }
+}
+
+class DrawBox extends React.Component {
+  componentDidMount() {
+    whatToDraw();
+  }
+
+  render() {
+    return(
+      <div className="DrawBox">
+      </div> //ignore comment
+      )
+  }
+}
+
+class PredBox extends React.Component {
+  render() {
+    return(
+      <div className="PredBox">
+      </div> //ignore comment
+    )
+  }
+}
+
+// canvas component
 class DrawCanvas extends React.Component {
   componentDidMount() {
     const canvas = this.refs.canvas;
 
     canvas.addEventListener("mousemove", function (e) {
-        findxy('move', e, canvas)
+        if (gameinProgress) {
+          findxy('move', e, canvas)          
+        }
     }, false);
     canvas.addEventListener("mousedown", function (e) {
-        findxy('down', e, canvas)
+        if (gameinProgress) {
+          setBoolInterval()
+          findxy('down', e, canvas)
+        }
     }, false);
     canvas.addEventListener("mouseup", function (e) {
-        findxy('up', e, canvas);
-        saveCanvas();
+        if (gameinProgress) {
+          findxy('up', e, canvas);
+          saveCanvas();
+        }
     }, false);
     canvas.addEventListener("mouseout", function (e) {
-        findxy('out', e, canvas)
+        if (gameinProgress) {
+          findxy('move', e, canvas)          
+        }
     }, false);
     
     const ctx = canvas.getContext("2d");    
     ctx.fillStyle  = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    setInterval(saveCanvas,2000);
   }
 
   render() {
     return(
       <div>
         <canvas className="TheCanvas" ref="canvas" width={960} height={540} />
-      </div>
+      </div> //ignore comment
     )
   }
 }
-
 
 function findxy(res, e, canvas) {
     const ctx = canvas.getContext("2d");    
@@ -140,6 +242,5 @@ function draw(ctx) {
     ctx.stroke();
     ctx.closePath();
 }
-
 
 export default App;

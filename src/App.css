@@ -34,11 +34,27 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top:125px;
 }
 
 .ClearButton {
   margin-left: 49%;
+}
+
+.DrawBox {
+  margin-top:75px;
+  font-size: 32px;
+  text-align: center;
+  font-family: "Georgia";
+  color: white; 
+}
+
+.PredBox {
+  margin-top:10px;
+  margin-bottom:10px;
+  font-size: 32px;
+  text-align: center;
+  font-family: "Georgia";
+  color: white;  
 }
 
 body {
