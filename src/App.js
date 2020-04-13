@@ -1,8 +1,15 @@
 import React from 'react';
 import logo from './logo.svg';
-import {Navbar, Button} from 'react-bootstrap';
+import {Navbar, Nav, Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import HowToPlay from './HowToPlay'
 
 // Variables for the drawing application
 let flag = false;
@@ -24,8 +31,9 @@ let gameinProgress = true;
 function App() {
   return (
   <>
+  <Router>
   <Navbar bg="dark" variant="dark">
-    <Navbar.Brand href="#home">
+    <Navbar.Brand href="/">
       <img
         alt=""
         src={logo}
@@ -33,27 +41,49 @@ function App() {
         height="30"
         className="d-inline-block align-top"
       />{' '}
-      Quickdraw!
+      Pictionary!
     </Navbar.Brand>
+    <Link className="nav-link whitelink" to="/how2play" pullRight>How to Play</Link>
+    <Link className="ml-auto nav-link whitelink" to="/old_drawings">Older drawings</Link>
+    <Nav.Link className="whitelink" pullRight>
+    Login
+    </Nav.Link>
   </Navbar>
+    <Route exact path="/how2play">
+      <HowToPlay />
+    </Route>
+    <Route exact path="/">
+      <Home />
+    </Route>
+  </Router>
+  </>
+  );
+}
+
+function Home() {
+  return (
+    <>
   <DrawBox/>
   <DrawCanvas/>
   <PredBox/>
   <Button 
   variant="dark"
+  size="lg"
   className = "ClearButton"
   onClick = {erase}
   >Clear
   </Button>
   <Button 
   variant="dark"
-  className = "ClearButton"
+  size="lg"
+  className = "NewGameBUtton"
   onClick = {newGame}
   >New Game
   </Button> 
-  </>
+    </>
   );
 }
+
 
 // Clears the canvas for redrawing
 function erase() {
