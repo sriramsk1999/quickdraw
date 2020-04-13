@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import {Navbar, Nav, Button} from 'react-bootstrap';
+import {Navbar, Nav, Button, Modal} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import {
@@ -44,10 +44,6 @@ function App() {
       Pictionary!
     </Navbar.Brand>
     <Link className="nav-link whitelink" to="/how2play" pullRight>How to Play</Link>
-    <Link className="ml-auto nav-link whitelink" to="/old_drawings">Older drawings</Link>
-    <Nav.Link className="whitelink" pullRight>
-    Login
-    </Nav.Link>
   </Navbar>
     <Route exact path="/how2play">
       <HowToPlay />
@@ -73,6 +69,13 @@ function Home() {
   onClick = {erase}
   >Clear
   </Button>
+  <Button 
+  variant="dark"
+  size="lg"
+  className = "MailSelfButton"
+  onClick = {MailSelf}
+  >Mail to self
+  </Button> 
   <Button 
   variant="dark"
   size="lg"
@@ -114,7 +117,23 @@ function saveCanvas() {
   'image/jpeg',1.0);
 }
 
+function MailSelf() {
+  let email = prompt("Enter email to send picture to: ");
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200 ) {
+        let response = xhr.responseText;
+        console.log(response);
+      }
+    }
+    xhr.open('POST', '/api/mail_drawing',true);
+    xhr.send(email);  
+}
+
+
 function newGame() {
+  let mailBtn = document.getElementsByClassName('MailSelfButton')[0];
+  //mailBtn.disabled = true;
   erase();
   let predBox = document.getElementsByClassName('PredBox')[0];
   predBox.innerText = "";
@@ -136,6 +155,9 @@ function gameOver() {
   let predEle = document.getElementsByClassName('PredBox')[0];
   predEle.innerText += ". Well drawn!";
   console.log("Game over.");
+
+  let mailBtn = document.getElementsByClassName('MailSelfButton')[0];
+  mailBtn.disabled = false;
 
   // reset state
   clearInterval(timerID);
@@ -192,6 +214,8 @@ class PredBox extends React.Component {
 // canvas component
 class DrawCanvas extends React.Component {
   componentDidMount() {
+    let mailBtn = document.getElementsByClassName('MailSelfButton')[0];
+    mailBtn.disabled = true;
     const canvas = this.refs.canvas;
 
     canvas.addEventListener("mousemove", function (e) {

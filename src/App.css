@@ -26,13 +26,18 @@
 }
 
 .ClearButton {
-  margin-left: 30%;
-  margin-right:30%;
+  margin-left: 25%;
+  margin-right:17%;
   display:inline;
 }
 
 .NewGameButton {
   display:inline;
+}
+
+.MailSelfButton {
+  display:inline;
+  margin-right:17%; 
 }
 
 .DrawBox {
