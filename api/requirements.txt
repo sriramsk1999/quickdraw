@@ -1,0 +1,10 @@
+numpy
+opencv-python
+keras
+tensorflow
+h5py
+scipy
+numpy
+pillow
+python-dotenv
+flask

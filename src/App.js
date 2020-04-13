@@ -134,7 +134,7 @@ function displayPrediction(prediction) {
 
 function gameOver() {
   let predEle = document.getElementsByClassName('PredBox')[0];
-  predEle.innerText = "Well drawn!";
+  predEle.innerText += ". Well drawn!";
   console.log("Game over.");
 
   // reset state

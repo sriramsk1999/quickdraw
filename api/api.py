@@ -1,5 +1,6 @@
 from flask import Flask, request
 import random
+from Predict import *
 
 app = Flask(__name__)
 
@@ -9,17 +10,13 @@ def store_canvas():
 	f = open('sample.jpeg','wb')
 	f.write(img)
 	f.close()
-	#preprocess image
-	#pass through CNN
-	#get index of max probability
-	#find matching entry in list of objects 
-	x = random.randint(0,9)
-	objects = ['apple','cat','dog','shark','sea','tree','flower','sun','moon','scythe']
-	return objects[x]
-
+	pred = Predict('sample.jpeg') 
+	if (pred[1] > 0.5):
+		return pred[0]
+	return
 
 @app.route('/api/object_name')
 def get_object_name():
 	x = random.randint(0,9)
-	objects = ['apple','cat','dog','shark','sea','tree','flower','sun','moon','scythe']
+	objects = ['apple','bowtie','candle','door','envelope','fish', 'guitar','ice cream','lightning','moon','mountain','star','tent','toothbrush','wristwatch']
 	return objects[x]
