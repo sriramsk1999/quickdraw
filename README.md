@@ -1,24 +1,7 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Pictionary!
 
-## Available Scripts
+The project enables a user to play a game of pictionary with a computer.
 
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `yarn start-api`
-
-Runs the flask server in development mode.<br />
-Should be run before `yarn start` as the front end will make RESTful calls to the flask server 
-
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+PES1201700097 - Sriram S K
+PES1201700158 - Sanket H S
+PES1201700108 - Siddarth Vinay
