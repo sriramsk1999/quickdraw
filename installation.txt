@@ -1,7 +1,0 @@
-1. install yarn
-2. run `yarn` in quickdraw/
-3. create virtualenv (named env) in api/ with the required libraries - tensorflow, keras, flask
-4. `yarn start-api` to start the flask server
-5. `yarn start` to start the web app
-
-run `pytest` in tests/ to run the unit tests

@@ -215,7 +215,7 @@ class PredBox extends React.Component {
 class DrawCanvas extends React.Component {
   componentDidMount() {
     let mailBtn = document.getElementsByClassName('MailSelfButton')[0];
-    mailBtn.disabled = true;
+    //mailBtn.disabled = true;
     const canvas = this.refs.canvas;
 
     canvas.addEventListener("mousemove", function (e) {
